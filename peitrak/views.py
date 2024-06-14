@@ -62,34 +62,37 @@ def send(request):
         form = SendForm()
     return render(request, 'store/upload_product.html', {'form': form})
 
-def receive(request):
+def receive(request,transaction_id):
     if request.method == 'POST':
         form = ReceiveForm(request.POST, request.FILES)
         if form.is_valid():
             username = request.user.username
             transact = Transact(username)
+            transact.receive(transaction_id,form.pin)
             return redirect('product_list')
     else:
         form = ReceiveForm()
     return render(request, 'store/upload_product.html', {'form': form})
 
-def cancel(request):
+def cancel(request,transaction_id):
     if request.method == 'POST':
         form = ReceiveForm(request.POST, request.FILES)
         if form.is_valid():
             username = request.user.username
             transact = Transact(username)
+            transact.cancel(transaction_id)
             return redirect('product_list')
     else:
         form = ReceiveForm()
     return render(request, 'store/upload_product.html', {'form': form})
 
-def reject(request):
+def reject(request,transaction_id):
     if request.method == 'POST':
         form = ReceiveForm(request.POST, request.FILES)
         if form.is_valid():
             username = request.user.username
             transact = Transact(username)
+            transact.reject(transaction_id)
             return redirect('product_list')
     else:
         form = ReceiveForm()
