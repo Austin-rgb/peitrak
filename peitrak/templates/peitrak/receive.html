@@ -1,0 +1,17 @@
+{% extends "peitrak/base.html" %}
+
+{% block title %}Send{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>Receive Transaction</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+       
+    </div>
+{% endblock %}

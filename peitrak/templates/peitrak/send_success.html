@@ -1,0 +1,19 @@
+{% extends "peitrak/base.html" %}
+
+{% block title %}Send{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>Transaction Success</h1>
+        <div class="alert alert-success" role="alert">
+            <p>{{ amount }} sent to {{ account_no }} Successfully</p>
+            <p>Transaction ID: {{ transaction_id }}</p>
+            <p>PIN: {{ pin }}</p>
+        </div>
+        {% if next %}
+        <a href="{{ next }}" class="btn btn-primary">Continue</a>
+        {% else %}
+        <a href="{% url 'send' %}" class="btn btn-primary">Send Another Transaction</a>
+        {% endif %}
+    </div>
+{% endblock %}

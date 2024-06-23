@@ -1,0 +1,33 @@
+{% extends "peitrak/base.html" %}
+
+{% block title %}Send{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>Completed Transactions</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Transaction ID</th>
+                    <th>Source User</th>
+                    <th>Destination User</th>
+                    <th>Amount</th>
+                    <th>Sent</th>
+                    <th>Received</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in completed_transactions %}
+                <tr>
+                    <td>{{ transaction.id }}</td>
+                    <td>{{ transaction.source.username }}</td>
+                    <td>{{ transaction.destination.username }}</td>
+                    <td>{{ transaction.amount }}</td>
+                    <td>{{ transaction.sent }}</td>
+                    <td>{{ transaction.received }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

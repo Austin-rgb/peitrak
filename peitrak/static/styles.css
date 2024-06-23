@@ -1,0 +1,62 @@
+/* styles.css */
+
+/* Background for the body */
+body.bg-light {
+    background-color: #f8f9fa;
+}
+
+/* Center the card vertically */
+.card {
+    margin-top: 100px;
+    border-radius: 10px;
+}
+
+/* Style for the card header */
+.card-header {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+/* Style the form elements */
+form p {
+    margin-bottom: 1rem;
+}
+
+/* Style the login button */
+button.btn-primary {
+    padding: 10px;
+    font-size: 1.25rem;
+    border-radius: 25px;
+}
+
+/* Links customization */
+.card-body a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.card-body a:hover {
+    text-decoration: underline;
+}
+
+/* Additional custom styles if needed */
+.text-muted {
+    color: #6c757d !important;
+}
+
+.text-primary {
+    color: #007bff !important;
+}
+
+.shadow-lg {
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+}
+
+/* Add padding and margin adjustments */
+.container {
+    padding: 20px;
+}
+
+.needs-validation .form-group {
+    margin-bottom: 1rem;
+}

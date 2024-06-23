@@ -2,17 +2,15 @@ from datetime import datetime
 import string
 import random
 from random import randint
-from django.db.models import AutoField
+from django.db import models
 from django.db.models import FloatField
 from django.db.models import ForeignKey
 from django.db.models import Model
 from django.db.models import DateTimeField
 from django.db.models import IntegerField
 from django.db.models import CharField 
-from django.db.models import SqliteDatabase
+from django.contrib.auth.models import User
 
-
-database = SqliteDatabase('wallet')
 def generate_pin():
     return randint(1000,9999)
 
@@ -21,30 +19,50 @@ def transaction_id():
     return ''.join(random.choice(letters) for _ in range(10))
 
 class Account(Model):
-    account_no = CharField(max_length = 32,primary_key = True)
+    user = ForeignKey(User,on_delete=models.CASCADE)
     balance = FloatField(default=0.0)
 
-class BaseTransaction(Model):
-    id = CharField(max_length=10,default=transaction_id)
-    source = CharField(max_length = 32)
-    destination = CharField(max_length = 32)
+class Update(Model):
+    user = models.ForeignKey (User,on_delete =models.CASCADE )
     amount = FloatField ()
-    sent = DateTimeField()
+    time = DateTimeField (default =datetime.now )
+    class Meta: 
+        abstract = True
+
+class Withdrawal (Update):
+    pass
+
+class Deposit (Update):
+    pass
+
+class PendingWithdrawal(Update):
+    pass
+
+class PendingDeposit(Update):
+    pass
+
+class Transaction(Model):
+    source = models.ForeignKey(User, on_delete=models.CASCADE, related_name='%(class)s_transactions_sent')
+    destination = models.ForeignKey(User, on_delete=models.CASCADE, related_name='%(class)s_transactions_received')
+    amount = FloatField ()
+    sent = DateTimeField(default=datetime.now)
+    
+    class Meta:
+        abstract = True
 
 
-class Transaction(BaseTransaction):
+class CompletedTransaction(Transaction):
     received = DateTimeField(default = datetime.now)
 
 
-class PendingTransaction(BaseTransaction):
-    sent = DateTimeField(default = datetime.now)
+class PendingTransaction(Transaction):
     pin = IntegerField(default =generate_pin )
 
 
-class CancelledTransaction(BaseTransaction):
+class CancelledTransaction(Transaction):
     cancelled = DateTimeField (default =datetime.now)
 
 
-class RejectedTransaction(BaseTransaction):
+class RejectedTransaction(Transaction):
     rejected = DateTimeField (default =datetime.now)
 

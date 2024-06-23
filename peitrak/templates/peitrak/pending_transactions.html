@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pending Transactions</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Pending Transactions</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Transaction ID</th>
+                    <th>Source User</th>
+                    <th>Destination User</th>
+                    <th>Amount</th>
+                    <th>Sent</th>
+                    <th>PIN</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction.id }}</td>
+                    <td>{{ transaction.source.username }}</td>
+                    <td>{{ transaction.destination.username }}</td>
+                    <td>{{ transaction.amount }}</td>
+                    <td>{{ transaction.sent }}</td>
+                    <td>{{ transaction.pin }}</td>
+                    <td>
+                        {% if request.user == transaction.destination %}
+                            <a href="{% url 'receive_transaction' transaction.id %}" class="btn btn-success btn-sm">Receive</a>
+                            <a href="{% url 'reject_transaction' transaction.id %}" class="btn btn-danger btn-sm">Reject</a>
+                        {% elif request.user == transaction.source %}
+                            <a href="{% url 'cancel_transaction' transaction.id %}" class="btn btn-warning btn-sm">Cancel</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,90 @@
+{% extends "peitrak/base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>Profile</h1>
+        
+        <h2>Account Information</h2>
+        {% if account %}
+        <p><strong>Account name.:</strong> {{ account.user.username }}</p>
+           
+            <p><strong>Account no.:</strong> {{ account.id }}</p>
+            <p><strong>Balance:</strong> ${{ account.balance }}</p>
+        {% else %}
+            <p>No account information available.</p>
+        {% endif %}
+        
+        <h2>Completed Transactions</h2>
+        {% if completed_transactions %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Source</th>
+                        <th>Destination</th>
+                        <th>Amount</th>
+                        <th>Sent</th>
+                        <th>Received</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in completed_transactions %}
+                    <tr>
+                        <td>{{ transaction.id }}</td>
+                        <td>{{ transaction.source.username }}</td>
+                        <td>{{ transaction.destination.username }}</td>
+                        <td>${{ transaction.amount }}</td>
+                        <td>{{ transaction.sent }}</td>
+                        <td>{{ transaction.received }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No completed transactions found.</p>
+        {% endif %}
+        
+        <h2>Pending Transactions</h2>
+        {% if pending_transactions %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Source</th>
+                        <th>Destination</th>
+                        <th>Amount</th>
+                        <th>Sent</th>
+                        <th>PIN</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in pending_transactions %}
+                    <tr>
+                        <td>{{ transaction.id }}</td>
+                        <td>{{ transaction.source.username }}</td>
+                        <td>{{ transaction.destination.username }}</td>
+                        <td>${{ transaction.amount }}</td>
+                        <td>{{ transaction.sent }}</td>
+                        <td>{{ transaction.pin }}</td>
+                        <td>
+                            {% if request.user == transaction.destination %}
+                                <a href="{% url 'receive_transaction' transaction.id %}" class="btn btn-success btn-sm">Receive</a>
+                                <a href="{% url 'reject_transaction' transaction.id %}" class="btn btn-danger btn-sm">Reject</a>
+                            {% elif request.user == transaction.source %}
+                                <a href="{% url 'cancel_transaction' transaction.id %}" class="btn btn-warning btn-sm">Cancel</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No pending transactions found.</p>
+        {% endif %}
+        
+        </div>
+
+{% endblock %}
