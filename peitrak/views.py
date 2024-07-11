@@ -78,7 +78,7 @@ class RejectedTransactionListView(TransactionListView):
 @login_required
 def send(request):
     if request.method == 'POST':
-        form = SendForm(request.POST, request.FILES)
+        form = SendForm(request.POST, request.FILES,user=request.user)
         if form.is_valid():
             user = request.user
             payment_method = form.cleaned_data['payment_method']
@@ -102,10 +102,12 @@ def send_to(request, account_no, amount):
     context['amount']=amount
     context['destination']=account_no
     if request.method == 'POST':
-        form = SendForm(request.POST, request.FILES)
+        form = SendForm(request.POST, request.FILES,user=request.user)
         if form.is_valid():
             user = request.user
-            payment_method = form.cleaned_data['payment_method']
+
+            # payment method set to wallet because payment validation process on the form validation moves all payments to wallet
+            payment_method = '2'#form.cleaned_data['payment_method']
             destination = form.cleaned_data['destination']
             amount = form.cleaned_data['amount']
             transact = Transact(user,payment_method)

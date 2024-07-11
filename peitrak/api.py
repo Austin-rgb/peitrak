@@ -1,5 +1,3 @@
-from peewee import IntegrityError
-from peewee import DoesNotExist
 from django.contrib.auth.models import User
 from .models import CompletedTransaction
 from .models import PendingTransaction
@@ -40,12 +38,21 @@ def validate_pin(pin,transaction_id):
         return True 
     except Exception as e:
         print(e)
-
+def validate_payment(user,payment_method,amount):
+    try:
+        user = User.objects.get(username=user)
+        payment_method = payment_methods[payment_method](user)
+        payment = payment_method.receive(amount)
+        if payment:
+            payment.to_account(user)
+            return True
+    except Exception as e:
+        print(e)
 class Wallet:     
     def __init__(self,user,payment_method):
         try:
             self.account = Account.objects.get(user=user)
-        except DoesNotExist:
+        except Account.DoesNotExist:
             raise InvalidAccount("Account does not exist")
         self.payment_method:PaymentMethod = payment_methods[payment_method](user)
           
@@ -69,7 +76,7 @@ class Transact:
         try:
             self.account = Account.objects.get(user=user)
         
-        except DoesNotExist:
+        except Account.DoesNotExist:
             raise InvalidAccount("User error: Account doesn't exist")
         self.payment_method:PaymentMethod = payment_methods[payment_method](user)
 
@@ -78,8 +85,11 @@ class Transact:
         destination = User.objects.get(username=destination)
         pending_transaction = PendingTransaction(source=self.account.user, destination =destination, amount =amount) 
         pending_transaction.save()
-        if self.payment_method.receive(amount).to_transaction(pending_transaction):
+        payment = self.payment_method.receive(amount)
+        if payment:
+            payment.to_transaction(pending_transaction)
             return pending_transaction.id,pending_transaction.pin
+        return payment
 
     def receive(self,transaction_id:int,pin:int)->bool:
         pending_transaction = PendingTransaction.objects.get(id=transaction_id)
