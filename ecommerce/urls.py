@@ -23,5 +23,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('peitrak/', include('peitrak.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/profile/',profile, name='profile')
 ]

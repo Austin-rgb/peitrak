@@ -1,5 +1,5 @@
 from .models import Account
-from .models import PendingTransaction, Withdrawal, Deposit,PendingDeposit
+from .models import Transaction, Withdrawal, Deposit,PendingDeposit
 
 
 class AccountMngr:     
@@ -26,35 +26,37 @@ class AccountMngr:
         return False
 
 class Payment: 
-    def __init__(self, amount,account=None, transaction=None) -> None:
-        self.amount=0
-        if account: 
-            if account.balance >= amount: 
-                account.balance-=amount 
-                account.save()
-                self.amount = amount 
-            else:
-                raise Exception ("Insufficient balance ")
-                
-        elif transaction: 
-            if transaction.amount >= amount: 
-                transaction.delete()
-                self.amount = amount 
-     
-
-    def to_account(self,user ): 
-        account=Account.objects.get(user=user)
-        account.balance+=self.amount
-        account.save()
-        del(self)
-        return True
+    def to_account(self,user ):
+        try: 
+            account=Account.objects.get(user=user)
+            account.balance+=self.amount
+            account.save()
+            del(self)
+            return True
+        except Exception as e:
+            print(e)
 
     def to_transaction(self,transaction):
         transaction.amount = self.amount
         transaction.save()
         del(self)
         return True
+class TransactionPayment(Payment):
+    def __init__(self,transaction:Transaction) -> None:
+        if transaction.amount >= transaction.amount: 
+            transaction.delete()
+            self.amount = transaction.amount
 
+class AccountPayment(Payment):
+    def __init__(self,account, amount) -> None:
+        self.amount=0
+        if account.balance >= amount: 
+            account.balance-=amount 
+            account.save()
+            self.amount = amount 
+        else:
+            raise Exception ("Insufficient balance ")
+                
 class PaymentMethod:
     """
     General class for handling transactions
@@ -68,7 +70,7 @@ class PaymentMethod:
             amount=amount 
         )
         pending.save()
-        return Payment(amount, transaction =pending)
+        return TransactionPayment(pending)
     
     def request(self,amount:float):
         return None
@@ -126,7 +128,7 @@ class Wallet(PaymentMethod):
         
     def receive(self,amount:float)->bool:
         if self.account.balance >=amount:
-            return Payment(amount,self.account)
+            return AccountPayment(amount=amount,account=self.account)
         return False
     
     def request(self,amount:float):

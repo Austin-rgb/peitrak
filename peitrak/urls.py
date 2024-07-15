@@ -1,15 +1,19 @@
-from django.contrib import admin
-from django.urls import path
-
+from django.urls import path, include
+from rest_framework.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 from .views import *
 
 urlpatterns = [
+    path('api',include('peitrak.api_urls')),
     path('register/',register, name ='register'),
-    path('transactions/', CompletedTransactionListView.as_view(), name='completed_transactions'),
+    path('transactions/', TransactionListView.as_view(), name='transactions'),
     path('send/',send,name='send'),
-    path('send/<str:account_no>/<int:amount>/',send_to,name= 'send_to'),
-    path('pending_transactions/',PendingTransactionListView.as_view(),name='pending_transactions'),
+    path('send/<str:request_id>/',send_to,name= 'send_to'),
+    path('profile',profile, name='profile'),
     path('pending_transactions/receive/<str:transaction_id>/',receive,name='receive_transaction'),
     path('pending_transactions/reject/<str:transaction_id>/',reject,name='reject_transaction'),
-    path('pending_transactions/cancel/<str:transaction_id>/',cancel,name='cancel_transaction')
+    path('pending_transactions/cancel/<str:transaction_id>/',cancel,name='cancel_transaction'),
+
 ]

@@ -20,13 +20,13 @@ def profile(request):
     except Account.DoesNotExist:
         account = None
     
-    completed_transactions = CompletedTransaction.objects.filter(source=user) | CompletedTransaction.objects.filter(destination=user)
-    pending_transactions = PendingTransaction.objects.filter(source=user) | PendingTransaction.objects.filter(destination=user)
+    
+    transactions = Transaction.objects.filter(source=user) | Transaction.objects.filter(destination=user)
     
     context = {
         'account': account,
-        'completed_transactions': completed_transactions,
-        'pending_transactions': pending_transactions
+        'transactions': transactions,
+        'username':user.username
     }
     return render(request, 'accounts/profile.html', context)
 
@@ -47,32 +47,13 @@ def register(request):
 class TransactionListView(LoginRequiredMixin,ListView):
     paginate_by = 10
     context_object_name = 'transactions'
-
+    model = Transaction 
+    template_name = 'peitrak/completed_transactions.html'
     def get_queryset(self):
         user = self.request.user
         query_set = self.model.objects.filter(source=user) | self.model.objects.filter(destination=user)
         query_set.order_by('-sent')
         return query_set
-
-
-class CompletedTransactionListView(TransactionListView):
-    model = CompletedTransaction 
-    template_name = 'peitrak/completed_transactions.html'
-    
-
-class PendingTransactionListView(TransactionListView):
-    model = PendingTransaction
-    template_name = 'peitrak/pending_transactions.html'
-    
-    
-class CancelledTransactionListView(TransactionListView):
-    model = CancelledTransaction
-    template_name = 'peitrak/cancelled_transactions.html'
-    
-    
-class RejectedTransactionListView(TransactionListView):
-    model = RejectedTransaction
-    template_name = 'peitrak/rejected_transactions_list.html'
     
 
 @login_required
@@ -97,17 +78,18 @@ def send(request):
     return render(request, 'peitrak/send.html', {'form': form})
 
 @login_required 
-def send_to(request, account_no, amount):
+def send_to(request, request_id):
+    payment_request = Request.objects.get(id=request_id)
+    amount = payment_request.amount
+    account_name = payment_request.destination.user.username
     context = {}
     context['amount']=amount
-    context['destination']=account_no
+    context['destination']=account_name
     if request.method == 'POST':
         form = SendForm(request.POST, request.FILES,user=request.user)
         if form.is_valid():
             user = request.user
-
-            # payment method set to wallet because payment validation process on the form validation moves all payments to wallet
-            payment_method = '2'#form.cleaned_data['payment_method']
+            payment_method = form.cleaned_data['payment_method']
             destination = form.cleaned_data['destination']
             amount = form.cleaned_data['amount']
             transact = Transact(user,payment_method)
@@ -145,7 +127,7 @@ def receive(request,transaction_id):
     form, transact = start_closing_transaction(request,transaction_id )
     if transact:
         if transact.receive(transaction_id, form.cleaned_data ['pin']):
-            return redirect('completed_transactions')
+            return redirect('profile')
         
     return render(request, 'peitrak/receive.html', {'form': form})
 
@@ -154,7 +136,7 @@ def cancel(request,transaction_id):
     form, transact = start_closing_transaction(request,transaction_id)
     if transact:
         if transact.cancel(transaction_id):
-            return redirect('completed_transactions')
+            return redirect('profile')
     
     return render(request, 'peitrak/cancel.html', {'form': form})
 
@@ -162,4 +144,4 @@ def cancel(request,transaction_id):
 def reject(request,transaction_id):
     transact = Transact(request.user,'1')
     transact.reject(transaction_id)
-    return redirect ('pending_transactions')
+    return redirect ('profile')

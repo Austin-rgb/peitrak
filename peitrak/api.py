@@ -1,13 +1,11 @@
+from datetime import datetime
 from django.contrib.auth.models import User
-from .models import CompletedTransaction
-from .models import PendingTransaction
-from .models import RejectedTransaction
-from .models import CancelledTransaction
+from .models import Transaction
 from .models import Account
 
 from .payment import Mpesa
 from .payment import PayPal
-from .payment import Payment, PaymentMethod
+from .payment import TransactionPayment, PaymentMethod
 from .payment import Wallet as Inwallet
 
 from .exceptions import *
@@ -27,14 +25,14 @@ def validate_username(username):
 
 def validate_transaction_id(transaction_id):
     try:
-        pending_transaction = PendingTransaction.objects.get (id=transaction_id)
+        transaction = Transaction.objects.get (id=transaction_id)
         return True 
     except Exception as e:
         print(e)
 
 def validate_pin(pin,transaction_id):
     try:
-        pending_transaction = PendingTransaction.objects.get (id=transaction_id,pin=pin )
+        transaction = Transaction.objects.get (id=transaction_id,pin=pin )
         return True 
     except Exception as e:
         print(e)
@@ -83,59 +81,40 @@ class Transact:
     def send(self,destination: str,amount:float)->tuple[str,int]:
         self.payment_method.request(amount)
         destination = User.objects.get(username=destination)
-        pending_transaction = PendingTransaction(source=self.account.user, destination =destination, amount =amount) 
-        pending_transaction.save()
+        transaction = Transaction(source=self.account.user, destination =destination, amount =amount) 
+        transaction.save()
         payment = self.payment_method.receive(amount)
         if payment:
-            payment.to_transaction(pending_transaction)
-            return pending_transaction.id,pending_transaction.pin
+            payment.to_transaction(transaction)
+            return transaction.id,transaction.pin
         return payment
 
     def receive(self,transaction_id:int,pin:int)->bool:
-        pending_transaction = PendingTransaction.objects.get(id=transaction_id)
-        if pending_transaction.pin == pin:
-            transaction = CompletedTransaction(
-                source=pending_transaction.source,
-                destination=pending_transaction.destination,
-                amount=pending_transaction.amount,
-                sent = pending_transaction.sent
-                )
-                
-            transaction.save()
-            payment = Payment (transaction.amount, transaction=pending_transaction)
+        transaction = Transaction.objects.get(id=transaction_id)
+        if transaction.pin == pin and transaction.can_receive():
+            transaction.receive()
+            payment = TransactionPayment (transaction)
             return self.payment_method.send(payment)
         
         else:
             raise InvalidPin("User error: Incorrect transaction Pin ")
 
     def cancel(self,transaction_id:int)->bool:
-        pending_transaction = PendingTransaction.objects.get(id=transaction_id)
-        if self.account.user==pending_transaction.source:
-            cancelled_transaction = CancelledTransaction(source=pending_transaction.source,
-                destination=pending_transaction.destination,
-                amount=pending_transaction.amount,
-                sent = pending_transaction.sent)
-                
-            cancelled_transaction.save()
-            payment = Payment(pending_transaction.amount,transaction =pending_transaction)
+        transaction = Transaction.objects.get(id=transaction_id)
+        if self.account.user==transaction.source:
+            transaction.cancel()
+            payment = TransactionPayment(transaction)
             self.payment_method.send(payment)
             return True
             
         return False 
 
     def reject(self,transaction_id:int)->bool:
-        pending_transaction = PendingTransaction.objects.get(id=transaction_id)
-        if self.account.user==pending_transaction.destination:
-            self.account.balance += pending_transaction.amount
-            rejected_transaction = RejectedTransaction(source=pending_transaction.source,
-                destination=pending_transaction.destination,
-                amount=pending_transaction.amount,
-                sent = pending_transaction.sent)
-                
-            rejected_transaction.save()
-            pending_transaction.delete()
-            self.account.save()
-            return True
+        transaction = Transaction.objects.get(id=transaction_id)
+        if self.account.user==transaction.destination:
+            transaction.reject()
+            payment = TransactionPayment(transaction)
+            return payment.to_account(transaction.source)
             
         else:
             return False

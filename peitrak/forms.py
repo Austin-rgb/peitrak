@@ -22,10 +22,13 @@ class SendForm(forms.Form):
         if not validate_payment(self.user,payment_method,amount):
             self.add_error('amount', 'Insufficient payment')
 
+        else:
+            clean_data['payment_method']='2'
+
         return clean_data
 
 class ReceiveForm(forms.Form):
-    transaction_id = forms.IntegerField(widget=forms.HiddenInput())
+    transaction_id = forms.CharField(widget=forms.HiddenInput())
     pin = forms.IntegerField(max_value=9999)
     payment_method = forms.ChoiceField(choices=(('1',"mpesa"),('2',"wallet")))
     def clean(self):

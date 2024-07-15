@@ -16,59 +16,41 @@
             <p>No account information available.</p>
         {% endif %}
         
-        <h2>Completed Transactions</h2>
-        {% if completed_transactions %}
+        <h2>Transactions</h2>
+        {% if transactions %}
             <table class="table table-bordered">
                 <thead>
                     <tr>
                         <th>Transaction ID</th>
-                        <th>Source</th>
-                        <th>Destination</th>
+                        <th>Transaction</th>
                         <th>Amount</th>
-                        <th>Sent</th>
-                        <th>Received</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for transaction in completed_transactions %}
-                    <tr>
-                        <td>{{ transaction.id }}</td>
-                        <td>{{ transaction.source.username }}</td>
-                        <td>{{ transaction.destination.username }}</td>
-                        <td>${{ transaction.amount }}</td>
-                        <td>{{ transaction.sent }}</td>
-                        <td>{{ transaction.received }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>No completed transactions found.</p>
-        {% endif %}
-        
-        <h2>Pending Transactions</h2>
-        {% if pending_transactions %}
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Transaction ID</th>
-                        <th>Source</th>
-                        <th>Destination</th>
-                        <th>Amount</th>
-                        <th>Sent</th>
-                        <th>PIN</th>
+                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for transaction in pending_transactions %}
+                    {% for transaction in transactions %}
                     <tr>
                         <td>{{ transaction.id }}</td>
-                        <td>{{ transaction.source.username }}</td>
-                        <td>{{ transaction.destination.username }}</td>
+                        <td>
+                            {% if transaction.source.username == username%}
+                            &#10148{{ transaction.destination.username }}
+                            {% else %}
+                            &#9194{{ transaction.source.username}}
+                            {% endif %}
+                        </td>
                         <td>${{ transaction.amount }}</td>
-                        <td>{{ transaction.sent }}</td>
-                        <td>{{ transaction.pin }}</td>
+                        <td>
+                            {% if transaction.cancelled %}
+                            cancelled
+                            {% elif transaction.rejected %}
+                            rejected
+                            {% elif transaction.received %}
+                            received
+                            {% elif transaction.sent %}
+                            sent
+                            {% endif %}
+                        </td>
                         <td>
                             {% if request.user == transaction.destination %}
                                 <a href="{% url 'receive_transaction' transaction.id %}" class="btn btn-success btn-sm">Receive</a>
@@ -82,8 +64,9 @@
                 </tbody>
             </table>
         {% else %}
-            <p>No pending transactions found.</p>
+            <p>No completed transactions found.</p>
         {% endif %}
+        
         
         </div>
 
