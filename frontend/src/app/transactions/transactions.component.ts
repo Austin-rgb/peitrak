@@ -5,6 +5,7 @@ import { TransactionsService } from '../transactions.service';
 import { Transaction } from "../transactions.service";
 import { MatButtonModule } from '@angular/material/button'
 import { MatTableModule } from '@angular/material/table'
+import { TransactionComponent } from '../transaction/transaction.component';
 @Component({
   selector: 'app-transactions',
   standalone: true,
@@ -12,7 +13,8 @@ import { MatTableModule } from '@angular/material/table'
     NgFor,
     CommonModule,
     MatButtonModule,
-    MatTableModule
+    MatTableModule,
+    TransactionComponent
   ],
   templateUrl: './transactions.component.html',
   styleUrl: './transactions.component.css'

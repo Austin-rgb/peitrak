@@ -30,6 +30,7 @@ export class TransactionsService {
     return transactions
   }
   async cancelTransaction(id: string): Promise<boolean> {
+    console.log('cancelled transaction')
     return true
   }
   async sendTransaction(destination: string, amount: any): Promise<boolean> {
@@ -37,6 +38,11 @@ export class TransactionsService {
     return true
   }
   async rejectTransaction(id: string): Promise<boolean> {
+    console.log(`rejected transaction ${id}`)
+    return true
+  }
+  async receiveTransaction(id: string, pin: number): Promise<boolean> {
+    console.log(`received transaction ${id}`)
     return true
   }
 }
