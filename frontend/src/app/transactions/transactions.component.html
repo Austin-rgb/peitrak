@@ -1,7 +1,18 @@
-<p>transactions works!</p>
-<ul class="heroes">
-  <li *ngFor="let hero of transactions">
-    Amount: {{hero.amount}}
-    Id: {{hero.id}}
-  </li>
-</ul>
+<div class="mat-elevation-z8">
+  <mat-table [dataSource]="transactions">
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>id</mat-header-cell>
+      <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="amount">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>amount</mat-header-cell>
+      <mat-cell *matCellDef="let element">{{element.amount}}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="sent_on">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Sent on</mat-header-cell>
+      <mat-cell *matCellDef="let element">{{element.sent_on}}</mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row;columns:displayedColumns;"></mat-row>
+  </mat-table>
+</div>
