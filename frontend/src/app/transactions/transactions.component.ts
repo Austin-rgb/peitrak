@@ -1,21 +1,21 @@
-import { Component } from '@angular/core';
-
+import { Component, inject } from '@angular/core';
+import { NgFor } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { TransactionsService } from '../transactions.service';
+import { Transaction } from "../transactions.service";
 @Component({
   selector: 'app-transactions',
   standalone: true,
-  imports: [],
+  imports: [NgFor,CommonModule],
   templateUrl: './transactions.component.html',
   styleUrl: './transactions.component.css'
 })
 export class TransactionsComponent {
-  transactions = [
-    {
-      id:'1',
-      amount:'100',
-    },
-    {
-      id:'1',
-      amount:'100',
-    },
-  ]
+  transactions:Transaction[] = []
+  trnsactionsService:TransactionsService = inject(TransactionsService)
+  constructor(){
+    this.trnsactionsService.getTransactions().then((data)=>{
+      this.transactions=data
+    })
+  }
 }

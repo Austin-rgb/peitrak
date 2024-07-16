@@ -1,1 +1,7 @@
 <p>transactions works!</p>
+<ul class="heroes">
+  <li *ngFor="let hero of transactions">
+    Amount: {{hero.amount}}
+    Id: {{hero.id}}
+  </li>
+</ul>
