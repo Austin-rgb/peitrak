@@ -1,12 +1,9 @@
 from django.urls import path, include
-from rest_framework.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
+
 from .views import *
 
 urlpatterns = [
-    path('api',include('peitrak.api_urls')),
+    path('api/',include('peitrak.api_urls')),
     path('register/',register, name ='register'),
     path('transactions/', TransactionListView.as_view(), name='transactions'),
     path('send/',send,name='send'),

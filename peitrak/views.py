@@ -7,8 +7,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from peitrak.api import Transact
+from peitrak.forms import ReceiveForm
+
+
 from .models import *
-from .forms import SendForm, ReceiveForm
+from .forms import SendForm
 from .api import Transact, Wallet
 
 
@@ -110,17 +114,13 @@ def send_to(request, request_id):
 
 def start_closing_transaction(request,transaction_id ):
     transact = None
-    form = None
-    if request.method == 'POST':
-        form = ReceiveForm(request.POST)
-        if form.is_valid():
-            user = request.user
-            transact = Transact(user,form.cleaned_data['payment_method'])
-
-    else:
-        form = ReceiveForm(initial=dict(transaction_id=transaction_id))
+    form = ReceiveForm(request.POST)
+    if form.is_valid():
+        user = request.user
+        transact = Transact(user,form.cleaned_data['payment_method'])
 
     return form, transact
+
 
 @login_required
 def receive(request,transaction_id):
