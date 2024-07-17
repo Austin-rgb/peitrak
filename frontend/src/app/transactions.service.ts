@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 })
 
 export class TransactionsService {
-  url = 'http:localhost:8000/api'
+  url = 'http:localhost:8000/peitrak/api/'
   constructor() { }
   async getTransactions(): Promise<Array<Transaction>> {
     let transactions: Transaction[] = [

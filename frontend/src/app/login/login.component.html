@@ -1,0 +1,15 @@
+<p>login works!</p>
+<div>
+    <h2>Login</h2>
+    <form (submit)="login()">
+        <div>
+            <label for="username">username</label>
+            <input type="text" id="username" [(ngModel)]="username" name="username" required>
+        </div>
+        <div>
+            <label for="password">password</label>
+            <input type="text" id="password" [(ngModel)]="password" name="password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+</div>
