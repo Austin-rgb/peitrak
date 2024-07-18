@@ -1,0 +1,56 @@
+<!--
+<h2 mat-dialog-title>{{title}}</h2>
+<div mat-dialog-content>
+    <ng-content></ng-content>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="closeModal()">&times;</button>
+</div>
+<p>start-modal works!</p>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    Launch demo modal
+</button>
+<div class="modal fade" tabindex="-1" role="dialog" id="exampleModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Start</h5>
+                <button type="button" class="close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <app-login></app-login>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+-->
+
+
+
+<ng-template #demoModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Profile update</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="form-group">
+                <label for="dateOfBirth">Date of birth</label>
+                <div class="input-group">
+                    <input id="dateOfBirth" name="dateOfBirth" class="form-control" placeholder="yyyy-mm-dd"
+                        ngbDatepicker #dp="ngbDatepicker">
+                    <button type="button" class="btn btn-outline-secondary bi bi-calendar"
+                        (click)="dp.toggle()"></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>
+    </div>
+</ng-template>
