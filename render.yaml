@@ -1,0 +1,12 @@
+# Exported from Render on 2024-07-18T10:57:21Z
+services:
+- type: web
+  name: peitrak-1
+  runtime: node
+  repo: https://github.com/Austin-rgb/peitrak
+  plan: free
+  region: oregon
+  buildCommand: npm install --force;npm install @angular/cli --force
+  startCommand: npm start
+  rootDir: frontend
+version: "1"
