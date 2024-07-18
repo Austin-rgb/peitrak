@@ -1,0 +1,12 @@
+.modak {
+    display: block;
+    background-color: azure;
+}
+
+.modal-dialog {
+    margin: 10% auto;
+}
+
+.show .modal-content {
+    display: block;
+}
