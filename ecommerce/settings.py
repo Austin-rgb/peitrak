@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure-s+1i7jr!m-6b7bp+-3ik^w5e17rjbbs4-8uoksm$_et30bi7v-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    'peitrak.onrender.com'
+]
 
 
 # Application definition
