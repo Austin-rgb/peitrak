@@ -7,6 +7,6 @@ services:
   plan: free
   region: oregon
   buildCommand: echo $GITHUB_TOKEN | docker login ghcr.io -u austin-rgb --password-stdin
-  startCommand: docker-compose up -d
-  rootDir: frontend
+  
+  rootDir: .
 version: "1"
