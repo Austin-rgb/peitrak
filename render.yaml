@@ -2,11 +2,11 @@
 services:
 - type: web
   name: peitrak-1
-  runtime: node
-  repo: https://github.com/Austin-rgb/peitrak
+  runtime: docker
+  repo: https://github.com/Austin-rgb/actix-ecommerce
   plan: free
   region: oregon
-  buildCommand: npm install --force;npm install @angular/cli --force
-  startCommand: npm start
+  buildCommand: echo $GITHUB_TOKEN | docker login ghcr.io -u austin-rgb --password-stdin
+  startCommand: docker-compose up -d
   rootDir: frontend
 version: "1"
